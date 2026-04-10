@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("EMPLOYEE") // ADMIN or EMPLOYEE
+  sales     Sale[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id          String     @id @default(uuid())
+  sku         String     @unique
+  name        String
+  description String?
+  categoryId  String?
+  category    Category?  @relation(fields: [categoryId], references: [id])
+  price       Float
+  stock       Int
+  minStock    Int        @default(5)
+  saleItems   SaleItem[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Sale {
+  id          String     @id @default(uuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id])
+  items       SaleItem[]
+  totalAmount Float
+  createdAt   DateTime   @default(now())
+}
+
+model SaleItem {
+  id        String  @id @default(uuid())
+  saleId    String
+  sale      Sale    @relation(fields: [saleId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float // price at the time of sale
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  message   String
+  type      String   @default("INFO") // INFO, WARNING, SUCCESS, ALERT
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
