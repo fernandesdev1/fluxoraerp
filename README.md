@@ -55,6 +55,7 @@ fluxora-erp/
 │   │   ├── controllers/
 │   │   ├── routes/
 │   │   ├── middlewares/
+│   ├── prisma/
 ```
 
 ---
